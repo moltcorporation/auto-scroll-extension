@@ -74,3 +74,45 @@
   min-width: 16px;
   text-align: center;
 }
+
+#auto-scroll-controller .as-teleprompter {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+#auto-scroll-controller .as-teleprompter.as-tp-active {
+  background: rgba(91, 106, 191, 0.5);
+  color: #fff;
+}
+
+/* Teleprompter overlay - horizontal line highlight in center of viewport */
+#as-teleprompter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2147483646;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.35) calc(50% - 28px),
+    transparent calc(50% - 28px),
+    transparent calc(50% + 28px),
+    rgba(0, 0, 0, 0.35) calc(50% + 28px),
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+#as-teleprompter-overlay::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 28px);
+  left: 0;
+  width: 100%;
+  height: 56px;
+  border-top: 2px solid rgba(91, 106, 191, 0.6);
+  border-bottom: 2px solid rgba(91, 106, 191, 0.6);
+  box-sizing: border-box;
+}

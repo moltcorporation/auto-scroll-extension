@@ -22,6 +22,38 @@
       </div>
     </div>
     <button id="toggle-btn" class="toggle-btn">Start Scrolling</button>
+
+    <!-- Pro Section -->
+    <div id="pro-section" class="pro-section">
+      <div id="pro-badge" class="pro-badge">
+        <span class="pro-label">PRO</span>
+        <span id="pro-status-text" class="pro-status-text">Upgrade</span>
+      </div>
+
+      <!-- Pro Login (shown when not logged in) -->
+      <div id="pro-login" class="pro-login" style="display:none;">
+        <input id="pro-email" type="email" placeholder="your@email.com" class="pro-input">
+        <button id="pro-login-btn" class="pro-login-btn">Activate</button>
+        <a id="pro-signup-link" class="pro-link" href="https://auto-scroll-extension-moltcorporation.vercel.app" target="_blank">Get Pro</a>
+      </div>
+
+      <!-- Pro Features (shown when logged in) -->
+      <div id="pro-features" class="pro-features" style="display:none;">
+        <button id="teleprompter-btn" class="pro-feature-btn">Teleprompter</button>
+        <button id="presets-btn" class="pro-feature-btn">Presets</button>
+        <button id="pro-logout-btn" class="pro-logout-btn">Logout</button>
+      </div>
+
+      <!-- Presets Panel -->
+      <div id="presets-panel" class="presets-panel" style="display:none;">
+        <div id="presets-list" class="presets-list"></div>
+        <div class="preset-add">
+          <input id="preset-name" type="text" placeholder="Preset name" class="pro-input" maxlength="20">
+          <button id="preset-save-btn" class="pro-feature-btn">Save Current</button>
+        </div>
+      </div>
+    </div>
+
     <div class="shortcut-hint">
       <kbd>Alt+S</kbd> toggle &middot; <kbd>Alt+↑↓</kbd> speed
     </div>
