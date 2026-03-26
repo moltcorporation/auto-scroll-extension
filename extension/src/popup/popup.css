@@ -150,3 +150,214 @@ kbd {
   font-size: 10px;
   color: #aaa;
 }
+
+/* Pro Section */
+.pro-section {
+  margin-bottom: 12px;
+  border-top: 1px solid #2a2a3e;
+  padding-top: 12px;
+}
+
+.pro-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #2a2a3e;
+  transition: background 0.15s;
+}
+
+.pro-badge:hover {
+  background: #3a3a4e;
+}
+
+.pro-badge.active {
+  background: rgba(91, 106, 191, 0.2);
+  border: 1px solid rgba(91, 106, 191, 0.4);
+  cursor: default;
+}
+
+.pro-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #5b6abf;
+  letter-spacing: 1px;
+}
+
+.pro-status-text {
+  font-size: 12px;
+  color: #888;
+}
+
+.pro-badge.active .pro-status-text {
+  color: #75d9a3;
+}
+
+.pro-login {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.pro-input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #2a2a3e;
+  color: #e0e0e0;
+  font-size: 12px;
+  outline: none;
+}
+
+.pro-input:focus {
+  border-color: #5b6abf;
+}
+
+.pro-login-btn {
+  padding: 7px;
+  border: none;
+  border-radius: 6px;
+  background: #5b6abf;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pro-login-btn:hover {
+  background: #6b7acf;
+}
+
+.pro-login-btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.pro-link {
+  font-size: 11px;
+  color: #5b6abf;
+  text-align: center;
+  text-decoration: none;
+}
+
+.pro-link:hover {
+  text-decoration: underline;
+}
+
+.pro-features {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.pro-feature-btn {
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: #2a2a3e;
+  color: #ccc;
+  font-size: 11px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.pro-feature-btn:hover {
+  background: #3a3a4e;
+  border-color: #666;
+}
+
+.pro-feature-btn.active {
+  background: rgba(91, 106, 191, 0.3);
+  border-color: #5b6abf;
+  color: #fff;
+}
+
+.pro-logout-btn {
+  padding: 6px 8px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background: transparent;
+  color: #666;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.pro-logout-btn:hover {
+  color: #c0392b;
+  border-color: #c0392b;
+}
+
+/* Presets Panel */
+.presets-panel {
+  margin-top: 8px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px;
+  background: #222238;
+}
+
+.presets-list {
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+.preset-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.preset-apply {
+  flex: 1;
+  text-align: left;
+  background: none;
+  border: none;
+  color: #ccc;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.preset-apply:hover {
+  background: #3a3a4e;
+  color: #fff;
+}
+
+.preset-delete {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 11px;
+  cursor: pointer;
+  padding: 2px 6px;
+}
+
+.preset-delete:hover {
+  color: #c0392b;
+}
+
+.preset-add {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.preset-add .pro-input {
+  flex: 1;
+  padding: 5px 8px;
+  font-size: 11px;
+}
+
+.preset-add .pro-feature-btn {
+  white-space: nowrap;
+  font-size: 10px;
+  padding: 5px 8px;
+}

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Coming soon - a new moltcorp product",
-  description: "Stay tuned. A new moltcorp product is launching here soon.",
+  title: "Auto Scroll Pro - Custom Hotkeys, Presets & Teleprompter Mode",
+  description: "Upgrade Auto Scroll with custom keyboard shortcuts, speed presets, teleprompter mode, and settings sync across devices.",
 };
 
 export default function RootLayout({

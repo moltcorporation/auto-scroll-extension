@@ -2,6 +2,8 @@ interface ScrollState {
   active: boolean;
   speed: number;
   animationId: number | null;
+  teleprompterMode: boolean;
+  isPro: boolean;
 }
 
 const MIN_SPEED = 1;
@@ -11,11 +13,19 @@ const SPEED_TO_PX: Record<number, number> = {
   1: 0.5, 2: 1, 3: 1.5, 4: 2, 5: 3, 6: 4, 7: 5.5, 8: 7, 9: 9, 10: 12,
 };
 
-const state: ScrollState = { active: false, speed: DEFAULT_SPEED, animationId: null };
+const state: ScrollState = {
+  active: false,
+  speed: DEFAULT_SPEED,
+  animationId: null,
+  teleprompterMode: false,
+  isPro: false,
+};
 
 let controller: HTMLElement | null = null;
 let speedLabel: HTMLElement | null = null;
 let toggleBtn: HTMLElement | null = null;
+let teleprompterOverlay: HTMLElement | null = null;
+let teleprompterBtn: HTMLElement | null = null;
 
 function getSiteKey(): string {
   return new URL(window.location.href).hostname;
@@ -39,6 +49,9 @@ function scrollStep(): void {
   if (!state.active) return;
   const px = SPEED_TO_PX[state.speed] ?? 1.5;
   window.scrollBy(0, px);
+  if (state.teleprompterMode) {
+    updateTeleprompterHighlight();
+  }
   state.animationId = requestAnimationFrame(scrollStep);
 }
 
@@ -79,6 +92,13 @@ function updateControllerUI(): void {
   toggleBtn.textContent = state.active ? "⏸" : "▶";
   toggleBtn.title = state.active ? "Pause (Alt+S)" : "Play (Alt+S)";
   controller.classList.toggle("as-active", state.active);
+
+  if (teleprompterBtn) {
+    teleprompterBtn.classList.toggle("as-tp-active", state.teleprompterMode);
+    teleprompterBtn.title = state.teleprompterMode
+      ? "Teleprompter: ON"
+      : "Teleprompter: OFF";
+  }
 }
 
 function notifyPopup(): void {
@@ -86,8 +106,46 @@ function notifyPopup(): void {
     type: "state-update",
     active: state.active,
     speed: state.speed,
+    teleprompterMode: state.teleprompterMode,
+    isPro: state.isPro,
   }).catch(() => {});
 }
+
+// --- Teleprompter Mode (Pro) ---
+
+function createTeleprompterOverlay(): void {
+  if (teleprompterOverlay) return;
+
+  teleprompterOverlay = document.createElement("div");
+  teleprompterOverlay.id = "as-teleprompter-overlay";
+  document.body.appendChild(teleprompterOverlay);
+}
+
+function removeTeleprompterOverlay(): void {
+  if (teleprompterOverlay) {
+    teleprompterOverlay.remove();
+    teleprompterOverlay = null;
+  }
+}
+
+function updateTeleprompterHighlight(): void {
+  // The overlay CSS handles the visual effect — two semi-transparent
+  // bars with a clear line in the center of the viewport
+}
+
+function toggleTeleprompter(): void {
+  if (!state.isPro) return;
+  state.teleprompterMode = !state.teleprompterMode;
+  if (state.teleprompterMode) {
+    createTeleprompterOverlay();
+  } else {
+    removeTeleprompterOverlay();
+  }
+  updateControllerUI();
+  notifyPopup();
+}
+
+// --- Controller UI ---
 
 function showController(): void {
   if (controller) {
@@ -96,17 +154,25 @@ function showController(): void {
   }
   controller = document.createElement("div");
   controller.id = "auto-scroll-controller";
+
+  let proButtons = "";
+  if (state.isPro) {
+    proButtons = `<button class="as-btn as-teleprompter${state.teleprompterMode ? " as-tp-active" : ""}" title="Teleprompter: ${state.teleprompterMode ? "ON" : "OFF"}">T</button>`;
+  }
+
   controller.innerHTML = `
     <button class="as-btn as-speed-down" title="Slower (Alt+↓)">−</button>
     <span class="as-speed-label">${state.speed}</span>
     <button class="as-btn as-speed-up" title="Faster (Alt+↑)">+</button>
     <button class="as-btn as-toggle" title="Play (Alt+S)">▶</button>
+    ${proButtons}
     <button class="as-btn as-close" title="Hide controller">✕</button>
   `;
   document.body.appendChild(controller);
 
   speedLabel = controller.querySelector(".as-speed-label");
   toggleBtn = controller.querySelector(".as-toggle");
+  teleprompterBtn = controller.querySelector(".as-teleprompter");
 
   controller.querySelector(".as-speed-down")!.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -121,9 +187,21 @@ function showController(): void {
     toggleScrolling();
     notifyPopup();
   });
+
+  if (teleprompterBtn) {
+    teleprompterBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleTeleprompter();
+    });
+  }
+
   controller.querySelector(".as-close")!.addEventListener("click", (e) => {
     e.stopPropagation();
     stopScrolling();
+    if (state.teleprompterMode) {
+      state.teleprompterMode = false;
+      removeTeleprompterOverlay();
+    }
     controller!.style.display = "none";
     notifyPopup();
   });
@@ -164,6 +242,32 @@ function makeDraggable(el: HTMLElement): void {
   });
 }
 
+// --- Pro Status ---
+
+function checkProStatus(): void {
+  chrome.runtime.sendMessage({ type: "check-pro" }, (response) => {
+    if (response && typeof response.isPro === "boolean") {
+      state.isPro = response.isPro;
+      // Rebuild controller if pro status changed and controller is visible
+      if (controller && controller.style.display !== "none") {
+        const wasActive = state.active;
+        const wasVisible = true;
+        controller.remove();
+        controller = null;
+        speedLabel = null;
+        toggleBtn = null;
+        teleprompterBtn = null;
+        if (wasVisible) {
+          showController();
+          if (wasActive) startScrolling();
+        }
+      }
+    }
+  });
+}
+
+// --- Message Handling ---
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   switch (message.type) {
     case "toggle":
@@ -185,7 +289,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       sendResponse({ active: state.active, speed: state.speed });
       break;
     case "get-state":
-      sendResponse({ active: state.active, speed: state.speed, visible: controller?.style.display !== "none" });
+      sendResponse({
+        active: state.active,
+        speed: state.speed,
+        visible: controller?.style.display !== "none",
+        teleprompterMode: state.teleprompterMode,
+        isPro: state.isPro,
+      });
       break;
     case "start":
       showController();
@@ -198,10 +308,38 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       notifyPopup();
       sendResponse({ active: state.active, speed: state.speed });
       break;
+    case "toggle-teleprompter":
+      if (state.isPro) {
+        toggleTeleprompter();
+      }
+      sendResponse({
+        active: state.active,
+        speed: state.speed,
+        teleprompterMode: state.teleprompterMode,
+      });
+      break;
+    case "pro-status-changed":
+      state.isPro = message.isPro;
+      // Rebuild controller to add/remove Pro buttons
+      if (controller && controller.style.display !== "none") {
+        const wasActive = state.active;
+        controller.remove();
+        controller = null;
+        speedLabel = null;
+        toggleBtn = null;
+        teleprompterBtn = null;
+        showController();
+        if (wasActive) startScrolling();
+      }
+      sendResponse({ ok: true });
+      break;
   }
   return true;
 });
 
+// Initialize
 loadSiteSpeed().then((speed) => {
   state.speed = speed;
 });
+
+checkProStatus();
