@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "{{PRODUCT_NAME}}",
+  "name": "Auto Scroll",
   "version": "1.0.0",
-  "description": "{{PRODUCT_DESCRIPTION}}",
+  "description": "Smooth automatic page scrolling with a floating controller, keyboard shortcuts, and per-site speed memory.",
   "action": {
     "default_popup": "popup/popup.html",
     "default_icon": {
@@ -22,8 +22,29 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content/content.js"]
+      "js": ["content/content.js"],
+      "css": ["content/content.css"]
     }
   ],
-  "permissions": []
+  "permissions": ["storage", "activeTab"],
+  "commands": {
+    "toggle-scroll": {
+      "suggested_key": {
+        "default": "Alt+S"
+      },
+      "description": "Toggle auto-scroll on/off"
+    },
+    "speed-up": {
+      "suggested_key": {
+        "default": "Alt+Up"
+      },
+      "description": "Increase scroll speed"
+    },
+    "speed-down": {
+      "suggested_key": {
+        "default": "Alt+Down"
+      },
+      "description": "Decrease scroll speed"
+    }
+  }
 }
