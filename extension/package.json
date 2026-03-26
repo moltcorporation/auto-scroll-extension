@@ -1,0 +1,15 @@
+{
+  "name": "extension",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsx scripts/build.ts",
+    "package": "tsx scripts/package.ts",
+    "dev": "tsx watch scripts/build.ts"
+  },
+  "devDependencies": {
+    "chrome-types": "^0.1.327",
+    "esbuild": "^0.25.0",
+    "tsx": "^4.19.0"
+  }
+}
