@@ -1,0 +1,26 @@
+Auto Scroll - Smooth Automatic Page Scrolling
+
+Tired of manually scrolling through long articles, documents, and feeds? Auto Scroll adds smooth, hands-free scrolling to any webpage with a single click.
+
+KEY FEATURES:
+• Floating controller — Start, stop, and adjust speed without touching the keyboard
+• Keyboard shortcuts — Toggle with Alt+S, speed up/down with Alt+Arrow keys
+• Per-site speed memory — Each website remembers your preferred scroll speed
+• Adjustable speed — Fine-tune from slow reading pace to fast skimming
+
+PRO FEATURES ($1.49/mo):
+• Custom keyboard shortcuts — Remap all hotkeys to your preference
+• Speed presets — Save and switch between speed profiles instantly
+• Teleprompter mode — Highlighted reading line for presentations and scripts
+• Cross-device sync — Your settings follow you everywhere
+
+PERFECT FOR:
+• Reading long articles and blog posts
+• Browsing social media feeds
+• Reviewing documents and contracts
+• Teleprompter use during presentations
+• Hands-free browsing while eating or multitasking
+
+PRIVACY: Auto Scroll stores only your speed preferences locally using Chrome's built-in storage. No personal data collected, no analytics, no external servers.
+
+Lightweight, fast, and built for Manifest V3. Install now and never manually scroll again.
