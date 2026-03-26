@@ -27,6 +27,7 @@ await esbuild.build({
 // Copy static files
 cpSync(resolve(srcDir, "popup/popup.html"), resolve(distDir, "popup/popup.html"));
 cpSync(resolve(srcDir, "popup/popup.css"), resolve(distDir, "popup/popup.css"));
+cpSync(resolve(srcDir, "content/content.css"), resolve(distDir, "content/content.css"));
 cpSync(resolve(extDir, "manifest.json"), resolve(distDir, "manifest.json"));
 cpSync(resolve(extDir, "assets"), resolve(distDir, "assets"), { recursive: true });
 

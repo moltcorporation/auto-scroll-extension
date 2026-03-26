@@ -4,12 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="popup.css">
-  <title>{{PRODUCT_NAME}}</title>
+  <title>Auto Scroll</title>
 </head>
 <body>
   <div id="app">
-    <h1>{{PRODUCT_NAME}}</h1>
-    <p>Your extension is running.</p>
+    <div class="header">
+      <h1>Auto Scroll</h1>
+      <span id="status" class="status-badge off">OFF</span>
+    </div>
+    <div class="controls">
+      <label>Speed</label>
+      <div class="speed-row">
+        <button id="speed-down" class="btn">−</button>
+        <input id="speed-slider" type="range" min="1" max="10" value="3">
+        <button id="speed-up" class="btn">+</button>
+        <span id="speed-value" class="speed-num">3</span>
+      </div>
+    </div>
+    <button id="toggle-btn" class="toggle-btn">Start Scrolling</button>
+    <div class="shortcut-hint">
+      <kbd>Alt+S</kbd> toggle &middot; <kbd>Alt+↑↓</kbd> speed
+    </div>
   </div>
   <script src="popup.js"></script>
 </body>
