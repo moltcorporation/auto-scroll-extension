@@ -1,0 +1,118 @@
+#auto-scroll-controller {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(26, 26, 46, 0.92);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(91, 106, 191, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  cursor: grab;
+  user-select: none;
+  transition: opacity 0.2s, border-color 0.2s;
+  opacity: 0.85;
+}
+
+#auto-scroll-controller:hover {
+  opacity: 1;
+}
+
+#auto-scroll-controller.as-active {
+  border-color: rgba(117, 217, 163, 0.5);
+}
+
+#auto-scroll-controller .as-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+#auto-scroll-controller .as-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+}
+
+#auto-scroll-controller .as-toggle {
+  width: 32px;
+  height: 28px;
+  font-size: 15px;
+  margin-left: 2px;
+}
+
+#auto-scroll-controller .as-close {
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  margin-left: 2px;
+  opacity: 0.5;
+}
+
+#auto-scroll-controller .as-close:hover {
+  opacity: 1;
+}
+
+#auto-scroll-controller .as-speed-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  min-width: 16px;
+  text-align: center;
+}
+
+#auto-scroll-controller .as-teleprompter {
+  font-weight: 700;
+  font-size: 12px;
+}
+
+#auto-scroll-controller .as-teleprompter.as-tp-active {
+  background: rgba(91, 106, 191, 0.5);
+  color: #fff;
+}
+
+/* Teleprompter overlay - horizontal line highlight in center of viewport */
+#as-teleprompter-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2147483646;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.35) 0%,
+    rgba(0, 0, 0, 0.35) calc(50% - 28px),
+    transparent calc(50% - 28px),
+    transparent calc(50% + 28px),
+    rgba(0, 0, 0, 0.35) calc(50% + 28px),
+    rgba(0, 0, 0, 0.35) 100%
+  );
+}
+
+#as-teleprompter-overlay::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 28px);
+  left: 0;
+  width: 100%;
+  height: 56px;
+  border-top: 2px solid rgba(91, 106, 191, 0.6);
+  border-bottom: 2px solid rgba(91, 106, 191, 0.6);
+  box-sizing: border-box;
+}
