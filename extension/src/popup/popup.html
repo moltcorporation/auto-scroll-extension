@@ -41,7 +41,29 @@
       <div id="pro-features" class="pro-features" style="display:none;">
         <button id="teleprompter-btn" class="pro-feature-btn">Teleprompter</button>
         <button id="presets-btn" class="pro-feature-btn">Presets</button>
+        <button id="hotkeys-btn" class="pro-feature-btn">Hotkeys</button>
         <button id="pro-logout-btn" class="pro-logout-btn">Logout</button>
+      </div>
+
+      <!-- Hotkeys Panel -->
+      <div id="hotkeys-panel" class="hotkeys-panel" style="display:none;">
+        <div class="hotkey-row">
+          <span class="hotkey-action">Toggle Scroll</span>
+          <button class="hotkey-record" data-action="toggle">Alt+S</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-action">Speed Up</span>
+          <button class="hotkey-record" data-action="speed-up">Alt+Up</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-action">Speed Down</span>
+          <button class="hotkey-record" data-action="speed-down">Alt+Down</button>
+        </div>
+        <div class="hotkey-row">
+          <span class="hotkey-action">Teleprompter</span>
+          <button class="hotkey-record" data-action="teleprompter">None</button>
+        </div>
+        <button id="hotkeys-reset-btn" class="pro-feature-btn hotkeys-reset">Reset Defaults</button>
       </div>
 
       <!-- Presets Panel -->
