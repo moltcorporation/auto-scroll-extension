@@ -293,6 +293,65 @@ kbd {
   border-color: #c0392b;
 }
 
+/* Hotkeys Panel */
+.hotkeys-panel {
+  margin-top: 8px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 8px;
+  background: #222238;
+}
+
+.hotkey-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+
+.hotkey-action {
+  font-size: 11px;
+  color: #ccc;
+}
+
+.hotkey-record {
+  min-width: 80px;
+  padding: 4px 8px;
+  border: 1px solid #444;
+  border-radius: 4px;
+  background: #2a2a3e;
+  color: #aaa;
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: center;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.hotkey-record:hover {
+  border-color: #666;
+  background: #3a3a4e;
+}
+
+.hotkey-record.recording {
+  border-color: #5b6abf;
+  background: rgba(91, 106, 191, 0.2);
+  color: #fff;
+  animation: pulse-border 1s ease-in-out infinite;
+}
+
+@keyframes pulse-border {
+  0%, 100% { border-color: #5b6abf; }
+  50% { border-color: #8b9aef; }
+}
+
+.hotkeys-reset {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 10px;
+  padding: 5px;
+}
+
 /* Presets Panel */
 .presets-panel {
   margin-top: 8px;

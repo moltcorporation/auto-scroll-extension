@@ -15,6 +15,9 @@ const proLoginBtn = document.getElementById("pro-login-btn") as HTMLButtonElemen
 const proLogoutBtn = document.getElementById("pro-logout-btn") as HTMLButtonElement;
 const teleprompterBtn = document.getElementById("teleprompter-btn") as HTMLButtonElement;
 const presetsBtn = document.getElementById("presets-btn") as HTMLButtonElement;
+const hotkeysBtn = document.getElementById("hotkeys-btn") as HTMLButtonElement;
+const hotkeysPanel = document.getElementById("hotkeys-panel") as HTMLDivElement;
+const hotkeysResetBtn = document.getElementById("hotkeys-reset-btn") as HTMLButtonElement;
 const presetsPanel = document.getElementById("presets-panel") as HTMLDivElement;
 const presetsList = document.getElementById("presets-list") as HTMLDivElement;
 const presetNameInput = document.getElementById("preset-name") as HTMLInputElement;
@@ -26,7 +29,56 @@ let speed = 3;
 let isPro = false;
 let teleprompterMode = false;
 let presets: Array<{ name: string; speed: number }> = [];
+let hotkeys: Record<string, string> = {};
+let recordingAction: string | null = null;
 let showingLogin = false;
+
+const DEFAULT_HOTKEYS: Record<string, string> = {
+  toggle: "Alt+S",
+  "speed-up": "Alt+ArrowUp",
+  "speed-down": "Alt+ArrowDown",
+  teleprompter: "",
+};
+
+function keyEventToCombo(e: KeyboardEvent): string {
+  const parts: string[] = [];
+  if (e.ctrlKey) parts.push("Ctrl");
+  if (e.altKey) parts.push("Alt");
+  if (e.shiftKey) parts.push("Shift");
+  if (e.metaKey) parts.push("Meta");
+  const key = e.key;
+  if (!["Control", "Alt", "Shift", "Meta"].includes(key)) {
+    parts.push(key.length === 1 ? key.toUpperCase() : key);
+  }
+  return parts.join("+");
+}
+
+function comboToDisplay(combo: string): string {
+  if (!combo) return "None";
+  return combo
+    .replace("ArrowUp", "\u2191")
+    .replace("ArrowDown", "\u2193")
+    .replace("ArrowLeft", "\u2190")
+    .replace("ArrowRight", "\u2192");
+}
+
+function updateHotkeyButtons(): void {
+  hotkeysPanel.querySelectorAll(".hotkey-record").forEach((btn) => {
+    const action = (btn as HTMLElement).dataset.action!;
+    const combo = hotkeys[action] || DEFAULT_HOTKEYS[action] || "";
+    btn.textContent = comboToDisplay(combo);
+    btn.classList.toggle("recording", recordingAction === action);
+    if (recordingAction === action) {
+      btn.textContent = "Press keys...";
+    }
+  });
+}
+
+async function saveHotkeys(): Promise<void> {
+  await chrome.runtime.sendMessage({ type: "save-settings", hotkeys, presets });
+  // Also store locally for content script access
+  await chrome.storage.sync.set({ custom_hotkeys: hotkeys });
+}
 
 function updateUI(): void {
   speedSlider.value = String(speed);
@@ -49,6 +101,7 @@ function updateUI(): void {
     proBadge.classList.remove("active");
     proFeatures.style.display = "none";
     presetsPanel.style.display = "none";
+    hotkeysPanel.style.display = "none";
   }
 }
 
@@ -78,7 +131,7 @@ function renderPresets(): void {
       const idx = Number((btn as HTMLElement).dataset.index);
       presets.splice(idx, 1);
       renderPresets();
-      await chrome.runtime.sendMessage({ type: "save-settings", hotkeys: {}, presets });
+      await chrome.runtime.sendMessage({ type: "save-settings", hotkeys, presets });
     });
   });
 }
@@ -113,15 +166,25 @@ async function init(): Promise<void> {
     isPro = proResult.isPro;
   }
 
-  // Load presets if pro
+  // Load presets and hotkeys if pro
   if (isPro) {
     const settings = await chrome.runtime.sendMessage({ type: "sync-settings" });
-    if (settings && settings.presets) {
-      presets = settings.presets;
+    if (settings) {
+      if (settings.presets) presets = settings.presets;
+      if (settings.hotkeys && Object.keys(settings.hotkeys).length > 0) {
+        hotkeys = settings.hotkeys;
+      }
     }
   }
 
+  // Also load hotkeys from local storage (may differ from server)
+  const stored = await chrome.storage.sync.get("custom_hotkeys");
+  if (stored.custom_hotkeys && Object.keys(stored.custom_hotkeys).length > 0) {
+    hotkeys = stored.custom_hotkeys;
+  }
+
   updateUI();
+  updateHotkeyButtons();
 }
 
 toggleBtn.addEventListener("click", async () => {
@@ -177,10 +240,13 @@ proLoginBtn.addEventListener("click", async () => {
     showingLogin = false;
     // Load settings
     const settings = await chrome.runtime.sendMessage({ type: "sync-settings" });
-    if (settings?.presets) {
-      presets = settings.presets;
+    if (settings?.presets) presets = settings.presets;
+    if (settings?.hotkeys && Object.keys(settings.hotkeys).length > 0) {
+      hotkeys = settings.hotkeys;
+      await chrome.storage.sync.set({ custom_hotkeys: hotkeys });
     }
     updateUI();
+    updateHotkeyButtons();
   } else {
     proLoginBtn.textContent = "Not found";
     setTimeout(() => {
@@ -196,7 +262,10 @@ proLogoutBtn.addEventListener("click", async () => {
   isPro = false;
   teleprompterMode = false;
   presets = [];
+  hotkeys = {};
   presetsPanel.style.display = "none";
+  hotkeysPanel.style.display = "none";
+  await chrome.storage.sync.remove("custom_hotkeys");
   updateUI();
 });
 
@@ -225,7 +294,64 @@ presetSaveBtn.addEventListener("click", async () => {
   presets.push({ name, speed });
   presetNameInput.value = "";
   renderPresets();
-  await chrome.runtime.sendMessage({ type: "save-settings", hotkeys: {}, presets });
+  await chrome.runtime.sendMessage({ type: "save-settings", hotkeys, presets });
+});
+
+// Hotkeys panel toggle
+hotkeysBtn.addEventListener("click", () => {
+  const visible = hotkeysPanel.style.display !== "none";
+  hotkeysPanel.style.display = visible ? "none" : "block";
+  presetsPanel.style.display = "none";
+  if (!visible) updateHotkeyButtons();
+});
+
+// Hotkey recording
+hotkeysPanel.querySelectorAll(".hotkey-record").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const action = (btn as HTMLElement).dataset.action!;
+    if (recordingAction === action) {
+      recordingAction = null;
+    } else {
+      recordingAction = action;
+    }
+    updateHotkeyButtons();
+  });
+});
+
+document.addEventListener("keydown", async (e: KeyboardEvent) => {
+  if (!recordingAction) return;
+  e.preventDefault();
+  e.stopPropagation();
+
+  // Ignore bare modifier presses
+  if (["Control", "Alt", "Shift", "Meta"].includes(e.key)) return;
+
+  // Escape clears the binding
+  if (e.key === "Escape") {
+    hotkeys[recordingAction] = "";
+    recordingAction = null;
+    updateHotkeyButtons();
+    await saveHotkeys();
+    return;
+  }
+
+  const combo = keyEventToCombo(e);
+  hotkeys[recordingAction] = combo;
+  recordingAction = null;
+  updateHotkeyButtons();
+  await saveHotkeys();
+}, true);
+
+// Reset hotkeys to defaults
+hotkeysResetBtn.addEventListener("click", async () => {
+  hotkeys = { ...DEFAULT_HOTKEYS };
+  updateHotkeyButtons();
+  await saveHotkeys();
+});
+
+// Close presets when opening hotkeys and vice versa
+presetsBtn.addEventListener("click", () => {
+  hotkeysPanel.style.display = "none";
 });
 
 chrome.runtime.onMessage.addListener((message) => {

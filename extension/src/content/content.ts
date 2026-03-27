@@ -242,6 +242,73 @@ function makeDraggable(el: HTMLElement): void {
   });
 }
 
+// --- Custom Hotkeys (Pro) ---
+
+let customHotkeys: Record<string, string> = {};
+
+function loadCustomHotkeys(): void {
+  chrome.storage.sync.get("custom_hotkeys", (result) => {
+    if (result.custom_hotkeys) {
+      customHotkeys = result.custom_hotkeys;
+    }
+  });
+}
+
+function matchesCombo(e: KeyboardEvent, combo: string): boolean {
+  if (!combo) return false;
+  const parts = combo.split("+");
+  const key = parts[parts.length - 1];
+  const needCtrl = parts.includes("Ctrl");
+  const needAlt = parts.includes("Alt");
+  const needShift = parts.includes("Shift");
+  const needMeta = parts.includes("Meta");
+
+  if (e.ctrlKey !== needCtrl) return false;
+  if (e.altKey !== needAlt) return false;
+  if (e.shiftKey !== needShift) return false;
+  if (e.metaKey !== needMeta) return false;
+
+  const eventKey = e.key.length === 1 ? e.key.toUpperCase() : e.key;
+  return eventKey === key;
+}
+
+function handleCustomHotkey(e: KeyboardEvent): void {
+  if (!state.isPro || Object.keys(customHotkeys).length === 0) return;
+
+  for (const [action, combo] of Object.entries(customHotkeys)) {
+    if (!combo || !matchesCombo(e, combo)) continue;
+    e.preventDefault();
+    e.stopPropagation();
+
+    switch (action) {
+      case "toggle":
+        showController();
+        toggleScrolling();
+        notifyPopup();
+        break;
+      case "speed-up":
+        setSpeed(state.speed + 1);
+        break;
+      case "speed-down":
+        setSpeed(state.speed - 1);
+        break;
+      case "teleprompter":
+        toggleTeleprompter();
+        break;
+    }
+    return;
+  }
+}
+
+document.addEventListener("keydown", handleCustomHotkey, true);
+
+// Listen for hotkey changes from storage
+chrome.storage.onChanged.addListener((changes) => {
+  if (changes.custom_hotkeys) {
+    customHotkeys = changes.custom_hotkeys.newValue || {};
+  }
+});
+
 // --- Pro Status ---
 
 function checkProStatus(): void {
@@ -343,3 +410,4 @@ loadSiteSpeed().then((speed) => {
 });
 
 checkProStatus();
+loadCustomHotkeys();
